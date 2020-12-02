@@ -199,8 +199,10 @@ export const AddAPrayerNotif = ({
     .catch(e => {
       setError(e.message)
       displaySnack(true)
-    })    
+    })
     dispatch(addPrayers({ ...res }))
+    setMessage('Successfully Added Prayer ' + res.displayName)
+    displaySnack(true)
   }
 
   const handleNext = () => {

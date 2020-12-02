@@ -10,7 +10,6 @@ import {
   IconButton
 } from '@material-ui/core'
 import { Edit as EditIcon, Person, SupervisorAccount } from '@material-ui/icons'
-import { useRouter } from 'next/router'
 import { connect } from 'react-redux'
 import { deepOrange } from '@material-ui/core/colors'
 
@@ -19,7 +18,6 @@ import Layout from '../components/Layout'
 import { RootState } from '../redux/reducer/RootReducer'
 
 const Account = ({ user }: { user: TUser | undefined }) => {
-  const router = useRouter()
   const classes = useStyles()
 
   return (
