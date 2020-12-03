@@ -163,7 +163,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }))
 
 const mapToProps = (state: RootState) => ({
-  prayers: state.prayer?.prayers
+  prayers: state.prayers?.prayers
 })
 
 export default connect(mapToProps)(PrayersPage)

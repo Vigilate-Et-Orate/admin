@@ -8,6 +8,7 @@ import CONST from '../constants'
 
 export function addPrayer(displayName: string, content: string): TPrayerAddActionsTypes {
   const prayer: TPrayer = {
+    _id: '',
     displayName: displayName,
     content: content,
     name: '',
