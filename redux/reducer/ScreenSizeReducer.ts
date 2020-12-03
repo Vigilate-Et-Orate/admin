@@ -1,8 +1,8 @@
-import CONST from '../constants'
+import CONST from '@constants'
 import {
   IScreenSizeState,
   TScreenSizeActionTypes
-} from '../../types/ScreenSize'
+} from 'types/ScreenSize'
 
 const initialState: IScreenSizeState = {
   width: 0

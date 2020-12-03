@@ -3,11 +3,12 @@ import {
   TPrayerNotificationContent,
   TPrayerAddActionsTypes,
   TPrayerActionsTypes
-} from '../../types/Prayer'
-import CONST from '../constants'
+} from 'types/Prayer'
+import CONST from '@constants'
 
 export function addPrayer(displayName: string, content: string): TPrayerAddActionsTypes {
   const prayer: TPrayer = {
+    _id: '',
     displayName: displayName,
     content: content,
     name: '',
@@ -45,6 +46,13 @@ export function updatePrayers(prayers: TPrayer[]): TPrayerActionsTypes {
   return {
     type: CONST.PRAYER.PRAYERS_UPDATE,
     prayers
+  }
+}
+
+export function updatePrayer(prayer: TPrayer): TPrayerActionsTypes {
+  return {
+    type: CONST.PRAYER.PRAYER_UPDATE,
+    prayer
   }
 }
 

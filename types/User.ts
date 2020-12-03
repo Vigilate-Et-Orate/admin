@@ -1,4 +1,4 @@
-import CONST from '../redux/constants'
+import CONST from 'redux/constants'
 
 export type TUser = {
   id: string
@@ -6,6 +6,11 @@ export type TUser = {
   lastname: string,
   email: string,
   admin: boolean
+}
+
+export interface IUsersState {
+  users: TUser[],
+  count: number
 }
 
 export type TSignInResponse = {
@@ -20,6 +25,27 @@ export type TRegisterResponse = {
   user: TUser,
   error?: string
 }
+
+// Users
+
+export interface IUsersAdd {
+  type: typeof CONST.USERS.USERS_ADD,
+  user: TUser
+}
+
+export interface IUsersUpdate {
+  type: typeof CONST.USERS.USERS_UPDATE,
+  users: TUser[]
+}
+
+export interface IUsersDelete {
+  type: typeof CONST.USERS.USERS_REMOVE,
+  user: TUser
+}
+
+export type TUsersActionsTypes = IUsersAdd | IUsersUpdate | IUsersDelete
+
+// User
 
 export interface IUserLoginAction {
   type: typeof CONST.USER_LOGIN

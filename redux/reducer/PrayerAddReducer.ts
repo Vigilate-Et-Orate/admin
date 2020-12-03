@@ -1,14 +1,15 @@
-import CONST from '../constants'
+import CONST from '@constants'
 import {
   IPrayerAddPrayer,
   IPrayerAddState,
   TPrayerAddActionsTypes,
   IPrayerAddInfos,
   IPrayerAddNotification
-} from '../../types/Prayer'
+} from 'types/Prayer'
 
 const initialState: IPrayerAddState = {
   prayer: {
+    _id: '',
     name: '',
     displayName: '',
     description: '',

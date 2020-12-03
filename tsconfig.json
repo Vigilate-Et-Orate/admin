@@ -18,7 +18,16 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "types/*": ["./types/*"],
+      "components/*": ["./components/*"],
+      "@constants": ["./redux/constants.ts"],
+      "config/*": ["./config/*"],
+      "actions/*": ["./redux/actions/*"],
+      "redux/*": ["./redux/*"]
+    }
   },
   "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]

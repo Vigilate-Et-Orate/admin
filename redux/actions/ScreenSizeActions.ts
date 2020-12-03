@@ -1,7 +1,7 @@
 import CONST from '../constants'
 import {
   TScreenSizeActionTypes
-} from '../../types/ScreenSize'
+} from 'types/ScreenSize'
 
 export function resizeScreen(width: number): TScreenSizeActionTypes {
   return {

@@ -15,11 +15,11 @@ import {
 import CloseButton from '@material-ui/icons/Close'
 import { connect, useDispatch } from 'react-redux'
 
-import URLS from '../config/url.config.json'
-import { TRegisterResponse } from '../types/User'
-import { RootState } from '../redux/reducer/RootReducer'
-import { userLogin } from '../redux/actions/UserActions'
-import Layout from '../components/Layout'
+import URLS from 'config/url.config.json'
+import { TRegisterResponse } from 'types/User'
+import { RootState } from 'redux/reducer/RootReducer'
+import { userLogin } from 'redux/actions/UserActions'
+import Layout from 'components/Layout'
 
 
 const Register = ({ loggedIn }: { loggedIn: boolean }):JSX.Element => {

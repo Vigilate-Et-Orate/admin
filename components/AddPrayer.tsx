@@ -103,6 +103,7 @@ export const AddAPrayerInformations = ({
 
   const handleNext = () => {
     const p: TPrayer = {
+      _id: '',
       displayName: prayer.displayName,
       content: prayer.content,
       name,

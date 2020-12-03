@@ -1,11 +1,11 @@
-import CONST from '../constants'
+import CONST from '@constants'
 import {
   IUserState,
   TUserActionTypes,
   IUserLoginAction,
   IUserUpdateAction,
   IUserTokenUpdateAction
-} from '../../types/User'
+} from 'types/User'
 
 const initialState: IUserState = {
   token: '',

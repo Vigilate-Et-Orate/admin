@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
   Button,
   Divider,
@@ -11,28 +11,11 @@ import {
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
 
-import URL from '../../config/url.config.json'
-import { RootState } from '../../redux/reducer/RootReducer'
+import { RootState } from 'redux/reducer/RootReducer'
 
-const PrayersStats = ({ token }: { token: string }) => {
-  const [number, setNumber] = useState(0)
+const PrayersStats = ({ count }: { count: number }) => {
   const classes = useStyles()
   const router = useRouter()
-
-  useEffect(() => {
-    fetch(URL.API + '/prayers', {
-      headers: {
-        'Authorization': token,
-        Accept: 'application/json'
-      }
-    }).then(res => {
-      return res.json()
-    }).then((data: any) => {
-      setNumber(data.prayers.length)
-    }).catch(e => {
-      console.error(e.message)
-    })
-  }, [])
 
   return (
     <div className={classes.cardPad}>
@@ -42,13 +25,13 @@ const PrayersStats = ({ token }: { token: string }) => {
       <List>
         <ListItem>
           <ListItemText>Total :</ListItemText>
-          <ListItemText>{number}</ListItemText>
+          <ListItemText>{count}</ListItemText>
         </ListItem>
       </List>
       <Divider />
       <div className={classes.actions}>
         <Button variant="contained" onClick={() => router.push('/Prayers')}>
-          View Prayers
+          Manage Prayers
         </Button>
       </div>
     </div>
@@ -70,7 +53,7 @@ const useStyles = makeStyles({
 })
 
 const mapToProps = (state: RootState) => ({
-  token: state.user.token
+  count: state.prayers.count
 })
 
 export default connect(mapToProps)(PrayersStats)

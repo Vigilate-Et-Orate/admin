@@ -33,9 +33,9 @@ import {
 import { useRouter } from 'next/router'
 import { connect, useDispatch } from 'react-redux'
 
-import { userLogout } from '../redux/actions/UserActions'
-import { TUser } from '../types/User'
-import { RootState } from '../redux/reducer/RootReducer'
+import { userLogout } from 'redux/actions/UserActions'
+import { TUser } from 'types/User'
+import { RootState } from 'redux/reducer/RootReducer'
 
 const drawerWidth = 240
 
@@ -59,7 +59,7 @@ const Nav = ({
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
-  const logout = () => dispatch(userLogout())
+  const logout = () => { dispatch(userLogout()); router.push('/SignIn') }
   const handleDrawerOpen = () => displayDrawer(true)
   const handleDrawerClose = () => displayDrawer(false)
   
@@ -148,7 +148,7 @@ const Nav = ({
           </ListItem>
           <Divider />
           {['Prayers', 'Intentions', 'Users'].map((text, index) => (
-            <ListItem button key={text} onClick={() => router.push('/' + text)}>
+            <ListItem button key={text} onClick={() => router.push('/' + text)} disabled={!loggedIn}>
               <ListItemIcon>{index === 0 ? <MenuBook /> : index === 2 ? <Comment /> : <AccountBox />}</ListItemIcon>
               <ListItemText primary={text} />
           </ListItem>

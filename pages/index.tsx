@@ -2,18 +2,26 @@ import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { connect, useDispatch } from 'react-redux'
 import {
+  Divider,
   Grid,
   makeStyles,
-  Paper
+  Paper,
+  Typography
 } from '@material-ui/core'
 
-import Layout from '../components/Layout'
-import { TUser } from '../types/User'
-import { RootState } from '../redux/reducer/RootReducer'
-import { updateUserToken, updateUser } from '../redux/actions/UserActions'
-import UserStats from '../components/Stats/UserStats'
-import PrayersStats from '../components/Stats/PrayersStats'
-import IntentionsStats from '../components/Stats/IntentionsStats'
+import URL from 'config/url.config.json'
+import firebase from 'config/firebase'
+import Layout from 'components/Layout'
+import { TUser } from 'types/User'
+import { RootState } from 'redux/reducer/RootReducer'
+import { updateUserToken, updateUser } from 'redux/actions/UserActions'
+import { updateUsers } from 'redux/actions/UsersActions'
+import { updatePrayers } from 'redux/actions/PrayerActions'
+import { updateIntentions } from 'redux/actions/IntentionsActions'
+import UserStats from 'components/Stats/UserStats'
+import PrayersStats from 'components/Stats/PrayersStats'
+import IntentionsStats from 'components/Stats/IntentionsStats'
+import { TIntention } from 'types/Intentions'
 
 function Home({ user, loggedIn }: {
   loggedIn: boolean,
@@ -32,16 +40,59 @@ function Home({ user, loggedIn }: {
       })
     })
     const token = localStorage.getItem('__token')
-    const user = localStorage.getItem('__user')
-    console.log('USER LOADED=', user)
     if (!loggedIn && !token) {
-        router.push('/SignIn')
-        return
+      router.push('/SignIn')
+      return
     } else if (token) {
       dispatch(updateUserToken(token))
     }
-    if (user) dispatch(updateUser(JSON.parse(user)))
+    loadData(token || '')
   }, [])
+
+  const loadData = async (token: string) => {
+    // User
+    const user = localStorage.getItem('__user')
+    if (user) dispatch(updateUser(JSON.parse(user)))
+    else if (token) {
+      const user = await fetch(URL.API + '/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+          Accept: 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .catch(console.error)
+      dispatch(updateUser(user))
+    }
+    // Prayers
+    const prayers = await fetch(URL.API + '/prayers')
+      .then(res => res.json())
+      .catch(console.error)
+    dispatch(updatePrayers(prayers.prayers))
+    // Users
+    if (!token) return
+    const users = await fetch(URL.API + '/users', {
+      headers: {
+        'Content-Type': 'application/json',
+          'Authorization': token,
+          Accept: 'application/json'
+      }
+    }).then(res => res.json()).catch(console.error)
+    dispatch(updateUsers(users.users))
+    // Intentions
+    const dbIntentions = firebase.firestore().collection('intentions')
+    const snapShot = await dbIntentions.get()
+    const ints: TIntention[] = []
+    snapShot.forEach(doc => {
+      const data = doc.data()
+      ints.push({
+        title: data.title,
+        intention: data.intention
+      })
+    })
+    dispatch(updateIntentions(ints))
+  }
 
   return (
     <Layout title="Dashboard">
@@ -70,6 +121,11 @@ function Home({ user, loggedIn }: {
             </div>
           </div>
         }
+        {!loggedIn && <div style={{ textAlign: 'center' }}>
+          <Typography variant="h4">API Vigilate et Orate Administration Dashboard</Typography>
+          <Divider />
+          <Typography variant="h6">Please Sign In to continue</Typography>
+        </div>}
       </div>
     </Layout>
   )
@@ -95,6 +151,10 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'row',
     justifyItems: 'center'
+  },
+  divider: {
+    marginTop: '3vh',
+    marginBottom: '6vh'
   }
 })
 
