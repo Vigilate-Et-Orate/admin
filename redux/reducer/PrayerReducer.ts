@@ -1,11 +1,12 @@
-import CONST from '../constants'
+import CONST from '@constants'
 import {
     IPrayerState,
     TPrayerActionsTypes,
     IPrayersUpdate,
     IPrayersAdd,
-    IPrayersDelete
-} from '../../types/Prayer'
+    IPrayersDelete,
+    IPrayerUpdate
+} from 'types/Prayer'
 
 const initialState: IPrayerState = {
   prayers: [],
@@ -21,6 +22,13 @@ const prayerReducer = (state = initialState, action: TPrayerActionsTypes) => {
     case CONST.PRAYER.PRAYERS_UPDATE:
       act = action as IPrayersUpdate
       return { ...state, prayers: act.prayers, count: act.prayers.length }
+    case CONST.PRAYER.PRAYER_UPDATE:
+      act = action as IPrayerUpdate
+      const prayer = act.prayer
+      const prayers = state.prayers
+      const ind = prayers.findIndex(p => p._id === prayer._id)
+      prayers[ind] = { ...prayers[ind],  ...prayer }
+      return { ...state, prayers: prayers }
     case CONST.PRAYER.PRAYER_DELETE:
       act = action as IPrayersDelete
       const name = act.prayer.name

@@ -17,6 +17,7 @@ const initialState = {
   },
   prayerAdd: {
     prayer: {
+      _id: '',
       name: '',
       displayName: '',
       content: '',
@@ -29,7 +30,7 @@ const initialState = {
       sound: true
     }
   },
-  prayer: {
+  prayers: {
     prayers: [],
     count: 0
   }

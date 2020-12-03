@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import axios, { AxiosResponse } from 'axios'
 import {
   makeStyles,
   Card,
@@ -15,11 +14,10 @@ import {
 import CloseButton from '@material-ui/icons/Close'
 import { connect, useDispatch } from 'react-redux'
 
-import URLS from '../config/url.config.json'
-import { TSignInResponse } from '../types/User'
-import { userLogin } from '../redux/actions/UserActions'
-import { RootState } from '../redux/reducer/RootReducer'
-import Layout from '../components/Layout'
+import URLS from 'config/url.config.json'
+import { userLogin } from 'redux/actions/UserActions'
+import { RootState } from 'redux/reducer/RootReducer'
+import Layout from 'components/Layout'
 
 const SignIn = ({
   loggedIn
@@ -46,25 +44,34 @@ const SignIn = ({
   }
 
   const signin = async () => {
-    setLoading(true)
-    try {
-      const res: AxiosResponse<TSignInResponse> = await axios.post(URLS.API + '/login', {
-        email,
-        password
+  setLoading(true)
+    const res = await fetch(URLS.API + '/login', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email, password
       })
-      dispatch(userLogin(res.data.token, res.data.user))
-      setEmail('')
-      setPassword('')
-      setLoading(false)
-      setConfirmation(`Welcome ${res.data.user.firstname} !`)
-      displaySnack(true)
-      router.push('/')
-    } catch (e) {
-      console.error(e.message)
-      setError('An Error Occured')
-      displaySnack(true)
-      return
-    }
+    }).then(async res => {
+      if (res.status !== 200) {
+        const data = await res.json()
+        setLoading(false)
+        setError(data.error || 'An Error Has Occured')
+        displaySnack(true)        
+        return data
+      }
+      return res.json()
+    })
+    if (res.error) return
+    dispatch(userLogin(res.token, res.user))
+    setEmail('')
+    setPassword('')
+    setLoading(false)
+    setConfirmation(`Welcome ${res.user.firstname} !`)
+    displaySnack(true)
+    router.push('/')
   }
 
   const snackClose = () => displaySnack(false)
@@ -91,7 +98,7 @@ const SignIn = ({
           </CardContent>
           <CardActions className={styles.actions}>
             <Button type="submit" onClick={signin}>{loading ? 'Loading' : 'Sign In'}</Button>
-            <Button onClick={() => router.push('Register')}>Register</Button>
+            <Button disabled onClick={() => router.push('/Register')}>Register</Button>
           </CardActions>
         </Card>
         <Snackbar

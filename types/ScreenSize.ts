@@ -1,4 +1,4 @@
-import CONST from '../redux/constants'
+import CONST from 'redux/constants'
 
 interface IScreenSizeAction {
   type: typeof CONST.RESIZE

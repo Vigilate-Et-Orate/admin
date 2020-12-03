@@ -1,8 +1,8 @@
 import {
   TUser,
   TUserActionTypes
-} from '../../types/User'
-import CONST from '../constants'
+} from 'types/User'
+import CONST from '@constants'
 
 export function updateUser(user: TUser): TUserActionTypes {
   localStorage.setItem('__user', JSON.stringify(user))

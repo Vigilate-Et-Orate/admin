@@ -13,9 +13,9 @@ import { Edit as EditIcon, Person, SupervisorAccount } from '@material-ui/icons'
 import { connect } from 'react-redux'
 import { deepOrange } from '@material-ui/core/colors'
 
-import { TUser } from '../types/User'
-import Layout from '../components/Layout'
-import { RootState } from '../redux/reducer/RootReducer'
+import { TUser } from 'types/User'
+import Layout from 'components/Layout'
+import { RootState } from 'redux/reducer/RootReducer'
 
 const Account = ({ user }: { user: TUser | undefined }) => {
   const classes = useStyles()

@@ -1,4 +1,4 @@
-import CONST from '../redux/constants'
+import CONST from '@constants'
 
 export interface IPrayerAddState {
   prayer: TPrayer,
@@ -11,6 +11,7 @@ export interface IPrayerState {
 }
 
 export type TPrayer = {
+  _id: string,
   displayName: string,
   name: string,
   content: string,
@@ -35,7 +36,12 @@ export interface IPrayersDelete {
   prayer: TPrayer
 }
 
-export type TPrayerActionsTypes = IPrayersUpdate | IPrayersAdd
+export interface IPrayerUpdate {
+  type: typeof CONST.PRAYER.PRAYER_UPDATE,
+  prayer: TPrayer
+}
+
+export type TPrayerActionsTypes = IPrayersUpdate | IPrayersAdd | IPrayerUpdate | IPrayersDelete
 
 // Prayer Add
 export type TPrayerNotificationContent = {
