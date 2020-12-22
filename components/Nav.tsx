@@ -120,7 +120,7 @@ const Nav = ({
           )}
           {!loggedIn &&
           <div>
-            <Button color="inherit" onClick={() => router.push('/Register')}>Sign up</Button>
+            {/* <Button color="inherit" onClick={() => router.push('/Register')}>Sign up</Button> */}
             <Button variant="outlined" color="inherit" onClick={() => router.push('/SignIn')}>Sign In</Button>
           </div>}
         </Toolbar>

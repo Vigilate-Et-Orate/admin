@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 import CloseButton from '@material-ui/icons/Close'
 import { connect, useDispatch } from 'react-redux'
+import firebase from 'firebase'
 
 import URLS from 'config/url.config.json'
 import { userLogin } from 'redux/actions/UserActions'
@@ -62,6 +63,13 @@ const SignIn = ({
         displaySnack(true)        
         return data
       }
+      const u = await firebase.auth().signInWithEmailAndPassword(email, password)
+      if (!u.user) {
+        setError('An Error Has Occured')
+        displaySnack(true)
+        return u
+      }
+      console.log('firebase User=', u)
       return res.json()
     })
     if (res.error) return
