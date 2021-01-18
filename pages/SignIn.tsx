@@ -48,6 +48,7 @@ const SignIn = ({
   setLoading(true)
     const res = await fetch(URLS.API + '/login', {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -55,9 +56,10 @@ const SignIn = ({
       body: JSON.stringify({
         email, password
       })
-    }).then(async res => {
+    }).then(async (res) => {
+      console.log('LOGIN RES', res)
+      const data = await res.json()
       if (res.status !== 200) {
-        const data = await res.json()
         setLoading(false)
         setError(data.error || 'An Error Has Occured')
         displaySnack(true)        
@@ -70,8 +72,9 @@ const SignIn = ({
         return u
       }
       console.log('firebase User=', u)
-      return res.json()
+      return data
     })
+    console.log('LOGIN RES 2', res)
     if (res.error) return
     dispatch(userLogin(res.token, res.user))
     setEmail('')
@@ -95,19 +98,21 @@ const SignIn = ({
       </div>
       <div className={styles.center}>
         <Card className={styles.root} raised>
-          <CardContent>
-            <Typography className={styles.title}>
-              Admin - Sign In
-            </Typography>
-            <form className={styles.inputs} onSubmit={handleSubmit}>
-              <TextField className={styles.input} id="email" label="Email" value={email} onChange={e => setEmail(e.target.value)} />
-              <TextField className={styles.input} id="password" type="password" label="Password" value={password} onChange={e => setPassword(e.target.value)} />
-            </form>
-          </CardContent>
-          <CardActions className={styles.actions}>
-            <Button type="submit" onClick={signin}>{loading ? 'Loading' : 'Sign In'}</Button>
-            <Button disabled onClick={() => router.push('/Register')}>Register</Button>
-          </CardActions>
+          <form onSubmit={handleSubmit}>
+            <CardContent>
+              <Typography className={styles.title}>
+                Admin - Sign In
+              </Typography>
+              <div className={styles.input}>
+                <TextField className={styles.input} id="email" label="Email" value={email} onChange={e => setEmail(e.target.value)} />
+                <TextField className={styles.input} id="password" type="password" label="Password" value={password} onChange={e => setPassword(e.target.value)} />
+              </div>
+            </CardContent>
+            <CardActions className={styles.actions}>
+              <Button type="submit">{loading ? 'Loading' : 'Sign In'}</Button>
+              <Button disabled onClick={() => router.push('/Register')}>Register</Button>
+            </CardActions>
+          </form>
         </Card>
         <Snackbar
           anchorOrigin={{

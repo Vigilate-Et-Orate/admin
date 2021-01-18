@@ -20,7 +20,6 @@ import { updatePrayers } from 'redux/actions/PrayerActions'
 import { updateIntentions } from 'redux/actions/IntentionsActions'
 import UserStats from 'components/Stats/UserStats'
 import PrayersStats from 'components/Stats/PrayersStats'
-import IntentionsStats from 'components/Stats/IntentionsStats'
 import { TIntention } from 'types/Intentions'
 
 function Home({ user, loggedIn }: {
@@ -102,17 +101,17 @@ function Home({ user, loggedIn }: {
             <h1 className={classes.title}>Hi {user?.firstname}</h1>
             <div className={classes.center}>
               <Grid container spacing={10}>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                   <Paper elevation={10} className={classes.paper}>
                     <PrayersStats />
                   </Paper>
                 </Grid>
-                <Grid item xs={4}>
+                {/* <Grid item xs={4}>
                   <Paper elevation={10} className={classes.paper}>
                     <IntentionsStats />
                   </Paper>
-                </Grid>
-                <Grid item xs={4}>
+                </Grid> */}
+                <Grid item xs={6}>
                   <Paper elevation={10} className={classes.paper}>
                     <UserStats />
                   </Paper>

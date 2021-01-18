@@ -147,7 +147,7 @@ const Nav = ({
             <ListItemText primary="Dashboard" />
           </ListItem>
           <Divider />
-          {['Prayers', 'Intentions', 'Users'].map((text, index) => (
+          {['Prayers', 'Users'].map((text, index) => (
             <ListItem button key={text} onClick={() => router.push('/' + text)} disabled={!loggedIn}>
               <ListItemIcon>{index === 0 ? <MenuBook /> : index === 2 ? <Comment /> : <AccountBox />}</ListItemIcon>
               <ListItemText primary={text} />
