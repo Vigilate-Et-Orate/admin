@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Avatar,
   createStyles,
@@ -7,7 +7,9 @@ import {
   Theme,
   Typography,
   makeStyles,
-  IconButton
+  IconButton,
+  TextField,
+  Button
 } from '@material-ui/core'
 import { Edit as EditIcon, Person, SupervisorAccount } from '@material-ui/icons'
 import { connect } from 'react-redux'
@@ -16,9 +18,30 @@ import { deepOrange } from '@material-ui/core/colors'
 import { TUser } from 'types/User'
 import Layout from 'components/Layout'
 import { RootState } from 'redux/reducer/RootReducer'
+import URLS from 'config/url.config.json'
 
-const Account = ({ user }: { user: TUser | undefined }) => {
+const Account = ({ user, token }: { user: TUser | undefined, token: string }) => {
   const classes = useStyles()
+
+  const [editing, setEditing] = useState(false)
+  const [newPwd, setNewPwd] = useState('')
+
+  const updatePwd = async () => {
+    console.log('TOKEN=', token)
+    const res = await fetch(URLS.API + '/me', {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        password: newPwd
+      })
+    })
+    console.log('RES UPDATE PWD=', res)
+  }
 
   return (
     <Layout title="Account">
@@ -40,9 +63,23 @@ const Account = ({ user }: { user: TUser | undefined }) => {
                 <Typography>{user.admin ? 'Admin' : 'Not Admin'}</Typography>
               </div>
             }
+            {editing &&
+              <div className={classes.edit}>
+                <TextField
+                  label="Update Pwd"
+                  value={newPwd}
+                  onChange={e => setNewPwd(e.target.value)}
+                />
+                <Button
+                  variant="outlined"
+                  title="Update"
+                  onClick={updatePwd}
+                >Update</Button>
+              </div>
+            }
           </Grid>
           <Grid item xs={2}>
-            <IconButton onClick={() => console.log('edit')}>
+            <IconButton onClick={() => setEditing(true)}>
               <EditIcon />
             </IconButton>
           </Grid>
@@ -60,6 +97,11 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: '20vh',
     fontSize: '3rem'
   },
+  edit: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: '1vh'
+  },
   divider: {
     marginTop: '2vh',
     marginBottom: '3vh'
@@ -71,7 +113,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }))
 
 const mapToProps = (state: RootState) => ({
-  user: state.user.user
+  user: state.user.user,
+  token: state.user.token
 })
 
 export default connect(mapToProps)(Account)

@@ -1,7 +1,7 @@
 import CONST from 'redux/constants'
 
 export type TUser = {
-  id: string
+  _id: string
   firstname: string,
   lastname: string,
   email: string,

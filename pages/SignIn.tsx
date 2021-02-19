@@ -13,7 +13,6 @@ import {
 } from '@material-ui/core'
 import CloseButton from '@material-ui/icons/Close'
 import { connect, useDispatch } from 'react-redux'
-import firebase from 'firebase'
 
 import URLS from 'config/url.config.json'
 import { userLogin } from 'redux/actions/UserActions'
@@ -62,19 +61,11 @@ const SignIn = ({
       if (res.status !== 200) {
         setLoading(false)
         setError(data.error || 'An Error Has Occured')
-        displaySnack(true)        
+        displaySnack(true)
         return data
       }
-      const u = await firebase.auth().signInWithEmailAndPassword(email, password)
-      if (!u.user) {
-        setError('An Error Has Occured')
-        displaySnack(true)
-        return u
-      }
-      console.log('firebase User=', u)
       return data
     })
-    console.log('LOGIN RES 2', res)
     if (res.error) return
     dispatch(userLogin(res.token, res.user))
     setEmail('')
@@ -93,7 +84,7 @@ const SignIn = ({
         <img
           width="100%"
           height="100%"
-          src={`https://source.unsplash.com/random/1200x1080`}
+          src={`/login.png`}
         />
       </div>
       <div className={styles.center}>
