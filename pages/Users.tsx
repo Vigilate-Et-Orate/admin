@@ -13,22 +13,27 @@ import {
   Checkbox,
   ListItemIcon,
   List,
+  Snackbar,
 } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { Delete, Edit, SupervisorAccountRounded } from '@material-ui/icons'
+import { Delete, Edit, SupervisorAccountRounded, Fingerprint, Close } from '@material-ui/icons'
 import { useRouter } from 'next/router'
 
 import { RootState } from 'redux/reducer/RootReducer'
 import { TUser } from 'types/User'
 import Layout from 'components/Layout'
+import URLS from 'config/url.config.json'
 
-const Users = ({ users, loggedIn }: { users: TUser[] | undefined, loggedIn: boolean }) => {
+const Users = ({ users, loggedIn, token }: { users: TUser[] | undefined, loggedIn: boolean, token: string }) => {
   const router = useRouter()
   const classes = useStyles()
 
   const [o, so] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
+  const [open, displaySnack] = useState(false)
+  const [msg, setMsg] = useState('')
 
+  const snackClose = () => displaySnack(false)
   const forceReload = () => so(!o)
   const deleteAll = () => {
     // selected.forEach(e => deletePrayer(e))
@@ -44,6 +49,23 @@ const Users = ({ users, loggedIn }: { users: TUser[] | undefined, loggedIn: bool
     else selected.push(id)
     setSelected(selected)
     forceReload()
+  }
+  const resetPassword = async (id: string) => {
+    const res = await fetch(URLS.API + '/users/' + id, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        password: process.env.SECRET_DEFAULT_PWD || 'secretPassword'
+      }),
+    })
+    if (!res) return
+    setMsg('Reseted pwd successfully')
+    displaySnack(true)
   }
 
   useEffect(() => {
@@ -78,13 +100,13 @@ const Users = ({ users, loggedIn }: { users: TUser[] | undefined, loggedIn: bool
       <Divider />
       <div className={classes.list}>
         <List>
-          {users && users.map((user: TUser) => {
+          {users && users.map((user: TUser) => (
             <React.Fragment>
-              <ListItem key={user.id}>
+              <ListItem key={user._id}>
                 <ListItemIcon>
                   <Checkbox
-                    checked={getChecked(user.id)}
-                    onChange={() => addChecked(user.id)}
+                    checked={getChecked(user._id)}
+                    onChange={() => addChecked(user._id)}
                   />
                 </ListItemIcon>
                 <ListItemText>
@@ -94,6 +116,9 @@ const Users = ({ users, loggedIn }: { users: TUser[] | undefined, loggedIn: bool
                   {user.admin &&
                     <SupervisorAccountRounded />
                   }
+                  <IconButton onClick={() => resetPassword(user._id)}>
+                    <Fingerprint />
+                  </IconButton>
                   <IconButton>
                     <Edit />
                   </IconButton>
@@ -103,9 +128,26 @@ const Users = ({ users, loggedIn }: { users: TUser[] | undefined, loggedIn: bool
                 </ListItemSecondaryAction>
               </ListItem>
             </React.Fragment>
-          })}
+          ))}
         </List>
       </div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        open={open}
+        autoHideDuration={4000}
+        message={msg}
+        onClose={snackClose}
+        action={
+          <React.Fragment>
+            <IconButton size="small" onClick={snackClose}>
+              <Close />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </Layout>
   )
 }
@@ -134,7 +176,8 @@ const useStyles = makeStyles((_theme: Theme) => createStyles({
 
 const mapToProps = (state: RootState) => ({
   users: state.users.users,
-  loggedIn: state.user.loggedIn
+  loggedIn: state.user.loggedIn,
+  token: state.user.token
 })
 
 export default connect(mapToProps)(Users)

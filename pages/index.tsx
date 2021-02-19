@@ -10,17 +10,14 @@ import {
 } from '@material-ui/core'
 
 import URL from 'config/url.config.json'
-import firebase from 'config/firebase'
 import Layout from 'components/Layout'
 import { TUser } from 'types/User'
 import { RootState } from 'redux/reducer/RootReducer'
 import { updateUserToken, updateUser } from 'redux/actions/UserActions'
 import { updateUsers } from 'redux/actions/UsersActions'
 import { updatePrayers } from 'redux/actions/PrayerActions'
-import { updateIntentions } from 'redux/actions/IntentionsActions'
 import UserStats from 'components/Stats/UserStats'
 import PrayersStats from 'components/Stats/PrayersStats'
-import { TIntention } from 'types/Intentions'
 
 function Home({ user, loggedIn }: {
   loggedIn: boolean,
@@ -79,18 +76,6 @@ function Home({ user, loggedIn }: {
       }
     }).then(res => res.json()).catch(console.error)
     dispatch(updateUsers(users.users))
-    // Intentions
-    const dbIntentions = firebase.firestore().collection('intentions')
-    const snapShot = await dbIntentions.get()
-    const ints: TIntention[] = []
-    snapShot.forEach(doc => {
-      const data = doc.data()
-      ints.push({
-        title: data.title,
-        intention: data.intention
-      })
-    })
-    dispatch(updateIntentions(ints))
   }
 
   return (
