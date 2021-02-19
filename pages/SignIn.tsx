@@ -56,7 +56,6 @@ const SignIn = ({
         email, password
       })
     }).then(async (res) => {
-      console.log('LOGIN RES', res)
       const data = await res.json()
       if (res.status !== 200) {
         setLoading(false)

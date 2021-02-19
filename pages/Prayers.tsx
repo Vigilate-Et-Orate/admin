@@ -224,9 +224,7 @@ const EditPrayer = ({ prayer, closeModal, token }: { prayer: TPrayer | undefined
         prayerContent: p
       })
     }).then(res => res.json())
-    console.log('res', res)
     res.notificationContent = prayer?.notificationContent || res.notificationContent || ''
-    console.log('res', res)
     dispatch(updatePrayer(res))
     closeModal()
   }

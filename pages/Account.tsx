@@ -27,7 +27,6 @@ const Account = ({ user, token }: { user: TUser | undefined, token: string }) =>
   const [newPwd, setNewPwd] = useState('')
 
   const updatePwd = async () => {
-    console.log('TOKEN=', token)
     const res = await fetch(URLS.API + '/me', {
       method: 'PUT',
       mode: 'cors',
@@ -40,7 +39,6 @@ const Account = ({ user, token }: { user: TUser | undefined, token: string }) =>
         password: newPwd
       })
     })
-    console.log('RES UPDATE PWD=', res)
   }
 
   return (
