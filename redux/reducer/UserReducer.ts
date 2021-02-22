@@ -4,21 +4,24 @@ import {
   TUserActionTypes,
   IUserLoginAction,
   IUserUpdateAction,
-  IUserTokenUpdateAction
+  IUserTokenUpdateAction,
 } from 'types/User'
 
 const initialState: IUserState = {
   token: '',
   loggedIn: false,
-  user: undefined
+  user: undefined,
 }
 
-const userReducer = (state = initialState, action: TUserActionTypes): IUserState => {
+const userReducer = (
+  state = initialState,
+  action: TUserActionTypes
+): IUserState => {
   let act
   switch (action.type) {
     case CONST.USER_LOGIN:
       act = action as IUserLoginAction
-      return { ...state, loggedIn: true, token: act.token, user: act.user}
+      return { ...state, loggedIn: true, token: act.token, user: act.user }
     case CONST.USER_LOGOUT:
       act = action as IUserLoginAction
       return { ...state, loggedIn: false }
@@ -27,8 +30,9 @@ const userReducer = (state = initialState, action: TUserActionTypes): IUserState
       return { ...state, token: act.token, loggedIn: true }
     case CONST.USER_UPDATE:
       act = action as IUserUpdateAction
-      return { ...state, user: act.user}
-    default: return state
+      return { ...state, user: act.user }
+    default:
+      return state
   }
 }
 

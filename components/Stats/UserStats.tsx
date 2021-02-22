@@ -6,7 +6,7 @@ import {
   ListItem,
   ListItemText,
   makeStyles,
-  Typography
+  Typography,
 } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
@@ -18,7 +18,7 @@ const UserStats = ({ count }: { count: number }) => {
 
   return (
     <div className={classes.cardPad}>
-      <Typography variant="h4" >Users</Typography>
+      <Typography variant="h4">Users</Typography>
       <div className={classes.spacing} />
       <Divider />
       <List>
@@ -39,20 +39,20 @@ const UserStats = ({ count }: { count: number }) => {
 
 const useStyles = makeStyles({
   spacing: {
-    marginTop: '3vh'
+    marginTop: '3vh',
   },
   cardPad: {
-    padding: '2vw'
+    padding: '2vw',
   },
   actions: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    marginTop: '3vh'
-  }
+    marginTop: '3vh',
+  },
 })
 
 const mapToProps = (state: RootState) => ({
-  count: state.users.count
+  count: state.users.count,
 })
 
 export default connect(mapToProps)(UserStats)

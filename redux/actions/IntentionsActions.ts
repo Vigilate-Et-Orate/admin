@@ -1,30 +1,34 @@
 import constants from '@constants'
-import {
-  TIntention,
-  TIntentionsActionsTypes
-} from 'types/Intentions'
+import { TIntention, TIntentionsActionsTypes } from 'types/Intentions'
 
-export function addIntentions(title: string, content: string): TIntentionsActionsTypes {
+export function addIntentions(
+  title: string,
+  content: string
+): TIntentionsActionsTypes {
   const intention: TIntention = {
     title,
-    intention: content
+    intention: content,
   }
   return {
     type: constants.INTENTIONS.INT_ADD,
-    intention
+    intention,
   }
 }
 
-export function deleteIntentions(intention: TIntention): TIntentionsActionsTypes {
+export function deleteIntentions(
+  intention: TIntention
+): TIntentionsActionsTypes {
   return {
     type: constants.INTENTIONS.INT_DELETE,
-    intention
+    intention,
   }
 }
 
-export function updateIntentions(intentions: TIntention[]): TIntentionsActionsTypes {
+export function updateIntentions(
+  intentions: TIntention[]
+): TIntentionsActionsTypes {
   return {
     type: constants.INTENTIONS.INT_UPDATE,
-    intentions
+    intentions,
   }
 }

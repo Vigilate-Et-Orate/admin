@@ -4,7 +4,7 @@ import {
   IPrayerAddState,
   TPrayerAddActionsTypes,
   IPrayerAddInfos,
-  IPrayerAddNotification
+  IPrayerAddNotification,
 } from 'types/Prayer'
 
 const initialState: IPrayerAddState = {
@@ -14,16 +14,19 @@ const initialState: IPrayerAddState = {
     displayName: '',
     description: '',
     content: '',
-    notificationContent: ''
+    notificationContent: '',
   },
   notificationContent: {
     title: '',
     body: '',
-    sound: true
-  }
+    sound: true,
+  },
 }
 
-const prayerAddReducer = (state = initialState, action: TPrayerAddActionsTypes) => {
+const prayerAddReducer = (
+  state = initialState,
+  action: TPrayerAddActionsTypes
+) => {
   let act
   switch (action.type) {
     case CONST.PRAYER.ADD_PRAYER:
@@ -35,7 +38,8 @@ const prayerAddReducer = (state = initialState, action: TPrayerAddActionsTypes) 
     case CONST.PRAYER.ADD_NOTIF:
       act = action as IPrayerAddNotification
       return { ...state, notificationContent: act.notificationContent }
-    default: return state
+    default:
+      return state
   }
 }
 
