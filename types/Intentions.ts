@@ -1,30 +1,33 @@
 import constants from '@constants'
 
 export type TIntention = {
-  title: string,
+  title: string
   intention: string
 }
 
 export interface IIntentionsState {
-  intentions: TIntention[],
+  intentions: TIntention[]
   count: number
 }
 
 // Intentions
 
 export interface IIntentionsAdd {
-  type: typeof constants.INTENTIONS.INT_ADD,
+  type: typeof constants.INTENTIONS.INT_ADD
   intention: TIntention
 }
 
 export interface IIntentionsUpdate {
-  type: typeof constants.INTENTIONS.INT_UPDATE,
+  type: typeof constants.INTENTIONS.INT_UPDATE
   intentions: TIntention[]
 }
 
 export interface IIntentionsDelete {
-  type: typeof constants.INTENTIONS.INT_DELETE,
+  type: typeof constants.INTENTIONS.INT_DELETE
   intention: TIntention
 }
 
-export type TIntentionsActionsTypes = IIntentionsAdd | IIntentionsDelete | IIntentionsUpdate
+export type TIntentionsActionsTypes =
+  | IIntentionsAdd
+  | IIntentionsDelete
+  | IIntentionsUpdate

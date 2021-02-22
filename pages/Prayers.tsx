@@ -30,15 +30,36 @@ import URL from 'config/url.config.json'
 import { RootState } from 'redux/reducer/RootReducer'
 import { TPrayer } from 'types/Prayer'
 import Layout from 'components/Layout'
-import { CreatePrayer, AddPrayerInformations, AddPrayerNotif } from 'components/AddPrayer'
-import { updatePrayer, updatePrayers, removePrayers } from 'redux/actions/PrayerActions'
+import {
+  CreatePrayer,
+  AddPrayerInformations,
+  AddPrayerNotif,
+} from 'components/AddPrayer'
+import {
+  updatePrayer,
+  updatePrayers,
+  removePrayers,
+} from 'redux/actions/PrayerActions'
+import { enqueueSnack } from 'actions/SnacksActions'
 
-const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefined, token: string, loggedIn: boolean }) => {
+const PrayersPage = ({
+  prayers,
+  token,
+  loggedIn,
+}: {
+  prayers: TPrayer[] | undefined
+  token: string
+  loggedIn: boolean
+}) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const steps = ['Create Prayer', 'Add Informations', 'Add Notification Content']
+  const steps = [
+    'Create Prayer',
+    'Add Informations',
+    'Add Notification Content',
+  ]
   const [activeStep, setActiveStep] = useState(0)
   const [add, setAdd] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
@@ -49,22 +70,26 @@ const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefi
   useEffect(() => {
     if (!loggedIn) router.push('/SignIn')
     if (!prayers || prayers.length <= 0)
-      fetch(URL.API + '/prayers').then(res => res.json()).then(data => {
-        dispatch(updatePrayers(data.prayers))
-      })
+      fetch(URL.API + '/prayers')
+        .then((res) => res.json())
+        .then((data) => {
+          dispatch(updatePrayers(data.prayers))
+        })
   }, [])
 
-  const handleNextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1)
-  const handleBackStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  const handleNextStep = () =>
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+  const handleBackStep = () =>
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
   const handleReset = () => setActiveStep(0)
   const forceReload = () => so(!o)
   const handleClose = () => openModal(false)
   const getChecked = (id: string) => {
-    if (selected.find(e => e === id)) return true
+    if (selected.find((e) => e === id)) return true
     return false
   }
   const addChecked = (id: string) => {
-    const index = selected.findIndex(e => e === id)
+    const index = selected.findIndex((e) => e === id)
     if (index !== -1) selected.splice(index, 1)
     else selected.push(id)
     setSelected(selected)
@@ -75,17 +100,37 @@ const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefi
     const res = await fetch(URL.API + `/prayers/${id}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': token,
+        Authorization: token,
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+      },
+    }).then(async (res) => {
+      const data = await res.json()
+      if (res.status !== 200) {
+        dispatch(
+          enqueueSnack({
+            message: 'Could not delete prayers: ' + data.error,
+            options: {
+              variant: 'error',
+            },
+          })
+        )
       }
-    }).catch(e => console.error(e.message))
-    if (!res) return
-    const data = await res.json()
-    dispatch(removePrayers(data))
+      return data
+    })
+    if (!res || res.error) return
+    dispatch(
+      enqueueSnack({
+        message: 'Prayer deleted successfully',
+        options: {
+          variant: 'success',
+        },
+      })
+    )
+    dispatch(removePrayers(res))
   }
   const deleteAll = () => {
-    selected.forEach(e => deletePrayer(e))
+    selected.forEach((e) => deletePrayer(e))
     setSelected([])
   }
 
@@ -93,38 +138,50 @@ const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefi
     <Layout title="Prayers">
       <div>
         <div className={classes.toolbar}>
-          <Typography variant="h5">
-            Prayers
-          </Typography>
+          <Typography variant="h5">Prayers</Typography>
           <div className={classes.actionsTool}>
             {selected && selected.length > 0 && (
               <div className={classes.actionsTool}>
                 <Button onClick={deleteAll}>
-                  delete { selected.length > 1 ? 'All' : '' }
+                  delete {selected.length > 1 ? 'All' : ''}
                 </Button>
-                <Button onClick={() => setSelected([])}>
-                  Reset Selection
-                </Button>
+                <Button onClick={() => setSelected([])}>Reset Selection</Button>
               </div>
-            )
-            }
-            <Button onClick={() => setAdd(true)}>
-              Add a prayer
-            </Button>
+            )}
+            <Button onClick={() => setAdd(true)}>Add a prayer</Button>
           </div>
         </div>
         <Divider />
-        {add && 
+        {add && (
           <div className={classes.add}>
-            <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
+            <Stepper
+              activeStep={activeStep}
+              orientation="vertical"
+              className={classes.stepper}
+            >
               {steps.map((label, index) => (
                 <Step key={label}>
                   <StepLabel>{label}</StepLabel>
                   <StepContent>
                     <div>
-                      {index === 0 ? <CreatePrayer handleBackStep={handleBackStep} handleNextStep={handleNextStep} activeStep={activeStep} />
-                      : index === 1 ? <AddPrayerInformations handleBackStep={handleBackStep} handleNextStep={handleNextStep} activeStep={activeStep} />
-                      : <AddPrayerNotif handleBackStep={handleBackStep} handleNextStep={handleNextStep} />}
+                      {index === 0 ? (
+                        <CreatePrayer
+                          handleBackStep={handleBackStep}
+                          handleNextStep={handleNextStep}
+                          activeStep={activeStep}
+                        />
+                      ) : index === 1 ? (
+                        <AddPrayerInformations
+                          handleBackStep={handleBackStep}
+                          handleNextStep={handleNextStep}
+                          activeStep={activeStep}
+                        />
+                      ) : (
+                        <AddPrayerNotif
+                          handleBackStep={handleBackStep}
+                          handleNextStep={handleNextStep}
+                        />
+                      )}
                     </div>
                   </StepContent>
                 </Step>
@@ -132,47 +189,62 @@ const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefi
             </Stepper>
             {activeStep === steps.length && (
               <div className={classes.resetContainer}>
-                <Typography>Done ! The prayer has been successfully added</Typography>
+                <Typography>
+                  Done ! The prayer has been successfully added
+                </Typography>
                 <Button onClick={handleReset} className={classes.buttonTwo}>
                   Add a New Prayer
                 </Button>
-                <Button onClick={() => setAdd(false)} className={classes.button}>
+                <Button
+                  onClick={() => setAdd(false)}
+                  className={classes.button}
+                >
                   Close
                 </Button>
               </div>
             )}
           </div>
-        }
+        )}
         <div className={classes.list}>
           <List>
-            {prayers && prayers.map((prayer: TPrayer) => (
-              <React.Fragment>
-                <ListItem key={prayer._id}>
-                  <ListItemIcon>
-                    <Checkbox
-                      checked={getChecked(prayer._id)}
-                      onChange={() => addChecked(prayer._id)}
-                    />
-                  </ListItemIcon>
-                  <ListItemText>{prayer.displayName} | {prayer.description}</ListItemText>
-                  <ListItemSecondaryAction>
-                    <IconButton onClick={() => { setEditP(prayer); openModal(true) }}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton onClick={() => deletePrayer(prayer._id)}>
-                      <Delete />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
+            {prayers &&
+              prayers.map((prayer: TPrayer) => (
+                <React.Fragment>
+                  <ListItem key={prayer._id}>
+                    <ListItemIcon>
+                      <Checkbox
+                        checked={getChecked(prayer._id)}
+                        onChange={() => addChecked(prayer._id)}
+                      />
+                    </ListItemIcon>
+                    <ListItemText>
+                      {prayer.displayName} | {prayer.description}
+                    </ListItemText>
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        onClick={() => {
+                          setEditP(prayer)
+                          openModal(true)
+                        }}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <IconButton onClick={() => deletePrayer(prayer._id)}>
+                        <Delete />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
+              ))}
           </List>
-          {prayers && prayers.length <= 0 &&
-            <div style={{ textAlign: 'center', marginTop: '10vh', height: '80vh' }}>
+          {prayers && prayers.length <= 0 && (
+            <div
+              style={{ textAlign: 'center', marginTop: '10vh', height: '80vh' }}
+            >
               <Typography variant="h6">No Prayers</Typography>
             </div>
-          }
+          )}
         </div>
         <Modal
           aria-labelledby="transition-model-title"
@@ -183,7 +255,7 @@ const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefi
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
-            timeout: 500
+            timeout: 500,
           }}
         >
           <Fade in={open}>
@@ -195,7 +267,15 @@ const PrayersPage = ({ prayers, token, loggedIn }: { prayers: TPrayer[] | undefi
   )
 }
 
-const EditPrayer = ({ prayer, closeModal, token }: { prayer: TPrayer | undefined, closeModal: () => void, token: string }) => {
+const EditPrayer = ({
+  prayer,
+  closeModal,
+  token,
+}: {
+  prayer: TPrayer | undefined
+  closeModal: () => void
+  token: string
+}) => {
   const classes = useStyles()
   const dispatch = useDispatch()
 
@@ -211,20 +291,21 @@ const EditPrayer = ({ prayer, closeModal, token }: { prayer: TPrayer | undefined
       name,
       description,
       content,
-      notificationContent: prayer?.notificationContent || ''
+      notificationContent: prayer?.notificationContent || '',
     }
     const res = await fetch(URL.API + '/prayers/' + prayer?._id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': token
+        Accept: 'application/json',
+        Authorization: token,
       },
       body: JSON.stringify({
-        prayerContent: p
-      })
-    }).then(res => res.json())
-    res.notificationContent = prayer?.notificationContent || res.notificationContent || ''
+        prayerContent: p,
+      }),
+    }).then((res) => res.json())
+    res.notificationContent =
+      prayer?.notificationContent || res.notificationContent || ''
     dispatch(updatePrayer(res))
     closeModal()
   }
@@ -237,19 +318,19 @@ const EditPrayer = ({ prayer, closeModal, token }: { prayer: TPrayer | undefined
         <TextField
           label="Display Name"
           value={displayName}
-          onChange={e => setDispName(e.target.value)}
+          onChange={(e) => setDispName(e.target.value)}
           className={classes.modalInput}
         />
         <TextField
           label="Name"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           className={classes.modalInput}
         />
         <TextField
           label="Description"
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           className={classes.modalInput}
         />
         <TextField
@@ -257,7 +338,7 @@ const EditPrayer = ({ prayer, closeModal, token }: { prayer: TPrayer | undefined
           value={content}
           multiline
           rows={6}
-          onChange={e => setContent(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
           className={classes.modalInput}
         />
         <div className={classes.modalAction}>
@@ -270,87 +351,89 @@ const EditPrayer = ({ prayer, closeModal, token }: { prayer: TPrayer | undefined
   )
 }
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  toolbar: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    padding: '20px'
-  },
-  list: {
-    paddingTop: '5vh',
-    paddingRight: '20vw',
-    paddingLeft: '20vw',
-    height: '80vh'
-  },
-  add: {
-    height: '50vh',
-    width: '100%',
-  },
-  root: {
-    width: '80%'
-  },
-  button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  actionsTool: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  buttonTwo: {
-    backgroundColor: '#1e2533',
-    color: '#e6e6e6',
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2)
-  },
-  resetContainer: {
-    padding: theme.spacing(3)
-  },
-  stepper: {
-    backgroundColor: '#e6e6e6'
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  paper: {
-    width: '60vw',
-    backgroundColor: theme.palette.background.paper,
-    outlineColor: theme.palette.background.paper,
-    color: theme.palette.getContrastText(theme.palette.background.paper),
-    boxShadow: theme.shadows[10],
-    padding: theme.spacing(4, 4, 5),
-    borderRadius: 20
-  },
-  inputs: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '90%'
-  },
-  modalAction: {
-    display: 'flex',
-    flexDirection: 'row-reverse'
-  },
-  modalInput: {
-    marginBottom: '1vh'
-  },
-  divider: {
-    marginTop: '1vh',
-    marginBottom: '2vh'
-  }
-}))
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    toolbar: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      padding: '20px',
+    },
+    list: {
+      paddingTop: '5vh',
+      paddingRight: '20vw',
+      paddingLeft: '20vw',
+      height: '80vh',
+    },
+    add: {
+      height: '50vh',
+      width: '100%',
+    },
+    root: {
+      width: '80%',
+    },
+    button: {
+      marginTop: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    },
+    actionsTool: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    buttonTwo: {
+      backgroundColor: '#1e2533',
+      color: '#e6e6e6',
+      marginTop: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    },
+    actionsContainer: {
+      marginBottom: theme.spacing(2),
+    },
+    resetContainer: {
+      padding: theme.spacing(3),
+    },
+    stepper: {
+      backgroundColor: '#e6e6e6',
+    },
+    modal: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    paper: {
+      width: '60vw',
+      backgroundColor: theme.palette.background.paper,
+      outlineColor: theme.palette.background.paper,
+      color: theme.palette.getContrastText(theme.palette.background.paper),
+      boxShadow: theme.shadows[10],
+      padding: theme.spacing(4, 4, 5),
+      borderRadius: 20,
+    },
+    inputs: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '90%',
+    },
+    modalAction: {
+      display: 'flex',
+      flexDirection: 'row-reverse',
+    },
+    modalInput: {
+      marginBottom: '1vh',
+    },
+    divider: {
+      marginTop: '1vh',
+      marginBottom: '2vh',
+    },
+  })
+)
 
 const mapToProps = (state: RootState) => ({
   prayers: state.prayers?.prayers,
   token: state.user.token,
-  loggedIn: state.user.loggedIn
+  loggedIn: state.user.loggedIn,
 })
 
 export default connect(mapToProps)(PrayersPage)

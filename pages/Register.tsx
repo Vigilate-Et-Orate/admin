@@ -10,7 +10,7 @@ import {
   Typography,
   TextField,
   Snackbar,
-  IconButton
+  IconButton,
 } from '@material-ui/core'
 import CloseButton from '@material-ui/icons/Close'
 import { connect, useDispatch } from 'react-redux'
@@ -21,8 +21,7 @@ import { RootState } from 'redux/reducer/RootReducer'
 import { userLogin } from 'redux/actions/UserActions'
 import Layout from 'components/Layout'
 
-
-const Register = ({ loggedIn }: { loggedIn: boolean }):JSX.Element => {
+const Register = ({ loggedIn }: { loggedIn: boolean }): JSX.Element => {
   const styles = useStyles()
   const router = useRouter()
   const dispatch = useDispatch()
@@ -37,13 +36,16 @@ const Register = ({ loggedIn }: { loggedIn: boolean }):JSX.Element => {
 
   const register = async () => {
     setLoading(true)
-    const res: AxiosResponse<TRegisterResponse> = await axios.post(URLS.API + '/register', {
-      lastname,
-      firstname,
-      email,
-      password,
-      admin: true
-    })
+    const res: AxiosResponse<TRegisterResponse> = await axios.post(
+      URLS.API + '/register',
+      {
+        lastname,
+        firstname,
+        email,
+        password,
+        admin: true,
+      }
+    )
     if (res.status !== 200) {
       setError(res.data.error || 'An Error Occured')
       displaySnack(true)
@@ -82,21 +84,48 @@ const Register = ({ loggedIn }: { loggedIn: boolean }):JSX.Element => {
               Register for an admin account
             </Typography>
             <div className={styles.inputs}>
-              <TextField className={styles.input} id="firstname" label="FirstName" value={firstname} onChange={e => setFirstname(e.target.value)} />
-              <TextField className={styles.input} id="lastname" label="LastName" value={lastname} onChange={e => setLastname(e.target.value)} />
-              <TextField className={styles.input} id="email" label="Email" value={email} onChange={e => setEmail(e.target.value)} />
-              <TextField className={styles.input} id="password" type="password" label="Password" value={password} onChange={e => setPassword(e.target.value)} />
+              <TextField
+                className={styles.input}
+                id="firstname"
+                label="FirstName"
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+              />
+              <TextField
+                className={styles.input}
+                id="lastname"
+                label="LastName"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+              />
+              <TextField
+                className={styles.input}
+                id="email"
+                label="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField
+                className={styles.input}
+                id="password"
+                type="password"
+                label="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
           </CardContent>
           <CardActions className={styles.actions}>
-            <Button onClick={register}>{loading ? 'Loading' : 'Register'}</Button>
+            <Button onClick={register}>
+              {loading ? 'Loading' : 'Register'}
+            </Button>
             <Button onClick={() => router.push('SignIn')}>Sign In</Button>
           </CardActions>
         </Card>
         <Snackbar
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'right'
+            horizontal: 'right',
           }}
           open={open}
           autoHideDuration={4000}
@@ -122,7 +151,7 @@ const useStyles = makeStyles({
     position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 20
+    zIndex: 20,
   },
   center: {
     height: '100vh',
@@ -133,7 +162,7 @@ const useStyles = makeStyles({
     position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 40
+    zIndex: 40,
   },
   inputs: {
     display: 'flex',
@@ -142,29 +171,29 @@ const useStyles = makeStyles({
     justifyItems: 'center',
     width: '80%',
     marginTop: '5%',
-    marginBottom: '2%'
+    marginBottom: '2%',
   },
   input: {
-    width: '100%'
+    width: '100%',
   },
   root: {
     width: '25%',
     backgroundColor: '#e5e5e5a4',
-    padding: '2%'
+    padding: '2%',
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   actions: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    padding: '4px 12px'
-  }
+    padding: '4px 12px',
+  },
 })
 
 const mapToProps = (state: RootState) => ({
-  loggedIn: state.user.loggedIn
+  loggedIn: state.user.loggedIn,
 })
 
 export default connect(mapToProps)(Register)

@@ -9,37 +9,41 @@ import {
   TextField,
   Theme,
   Typography,
-  Snackbar,
-  IconButton
 } from '@material-ui/core'
 import { useDispatch, connect } from 'react-redux'
-import { Close, VolumeOffOutlined, VolumeUpOutlined } from '@material-ui/icons'
+import { VolumeOffOutlined, VolumeUpOutlined } from '@material-ui/icons'
 
 import { TPrayer, TPrayerNotificationContent } from '../types/Prayer'
-import { addPrayer, addPrayerInfos, addPrayerNotification, addPrayers } from '../redux/actions/PrayerActions'
+import {
+  addPrayer,
+  addPrayerInfos,
+  addPrayerNotification,
+  addPrayers,
+} from '../redux/actions/PrayerActions'
 import { RootState } from '../redux/reducer/RootReducer'
 import URL from '../config/url.config.json'
+import { enqueueSnack } from 'actions/SnacksActions'
 
 type Props = {
-  handleBackStep: () => void,
-  handleNextStep: () => void,
-  activeStep: number,
+  handleBackStep: () => void
+  handleNextStep: () => void
+  activeStep: number
   prayer: TPrayer
 }
 
 const mapToPrayer = (state: RootState) => ({
-  prayer: state.prayerAdd.prayer
+  prayer: state.prayerAdd.prayer,
 })
 
 const CreateAPrayer = ({
   handleBackStep,
   handleNextStep,
   prayer,
-  activeStep
+  activeStep,
 }: Props) => {
   const dispatch = useDispatch()
   const classes = useStyles()
-  
+
   const [displayName, setDisplayName] = useState(prayer.displayName)
   const [content, setContent] = useState(prayer.content)
 
@@ -93,12 +97,14 @@ export const AddAPrayerInformations = ({
   prayer,
   handleBackStep,
   handleNextStep,
-  activeStep
+  activeStep,
 }: Props) => {
   const dispatch = useDispatch()
   const classes = useStyles()
 
-  const [name, setName] = useState(prayer.displayName.toLocaleLowerCase().split(' ').join('-'))
+  const [name, setName] = useState(
+    prayer.displayName.toLocaleLowerCase().split(' ').join('-')
+  )
   const [description, setDescription] = useState(prayer.description)
 
   const handleNext = () => {
@@ -108,7 +114,7 @@ export const AddAPrayerInformations = ({
       content: prayer.content,
       name,
       description,
-      notificationContent: prayer.notificationContent
+      notificationContent: prayer.notificationContent,
     }
     dispatch(addPrayerInfos(p))
     handleNextStep()
@@ -151,19 +157,21 @@ export const AddAPrayerInformations = ({
     </div>
   )
 }
-export const AddPrayerInformations = connect(mapToPrayer)(AddAPrayerInformations)
+export const AddPrayerInformations = connect(mapToPrayer)(
+  AddAPrayerInformations
+)
 
 export const AddAPrayerNotif = ({
   notif,
   prayer,
   token,
   handleBackStep,
-  handleNextStep
+  handleNextStep,
 }: {
-  notif: TPrayerNotificationContent,
-  prayer: TPrayer,
-  token: string,
-  handleBackStep: () => void,
+  notif: TPrayerNotificationContent
+  prayer: TPrayer
+  token: string
+  handleBackStep: () => void
   handleNextStep: () => void
 }) => {
   const dispatch = useDispatch()
@@ -172,45 +180,74 @@ export const AddAPrayerNotif = ({
   const [title, setTitle] = useState(notif.title)
   const [body, setBody] = useState(notif.body)
   const [sound, setSound] = useState(notif.sound)
-  const [open, displaySnack] = useState(false)
-  const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
-
-  const snackClose = () => displaySnack(false)
 
   const saveApi = async (notif: TPrayerNotificationContent) => {
     if (!token) {
-      setError('Not Signed In Or Invalid Token')
-      displaySnack(true)
+      dispatch(
+        enqueueSnack({
+          message: 'Not Signed In Or Invalid Token',
+          options: {
+            variant: 'error',
+          },
+        })
+      )
       return
     }
     const res = await fetch(URL.API + '/prayers', {
       method: 'POST',
       mode: 'cors',
       headers: {
-        'Authorization': token,
-        'Accept': 'application/json',
-        'Content-type': 'application/json'
+        Authorization: token,
+        Accept: 'application/json',
+        'Content-type': 'application/json',
       },
       body: JSON.stringify({
         prayerContent: prayer,
-        notifContent: notif
-      })
-    }).then(res => res.json())
-    .catch(e => {
-      setError(e.message)
-      displaySnack(true)
+        notifContent: notif,
+      }),
     })
+      .then(async (res) => {
+        const data = await res.json()
+        if (res.status !== 200) {
+          dispatch(
+            enqueueSnack({
+              message: 'Failed to create new prayer: ' + data.error,
+              options: {
+                variant: 'error',
+              },
+            })
+          )
+          return data
+        }
+        return data
+      })
+      .catch((e) => {
+        dispatch(
+          enqueueSnack({
+            message: 'Failed to create new prayer: ' + e.message,
+            options: {
+              variant: 'error',
+            },
+          })
+        )
+      })
+    if (!res || res.error) return
     dispatch(addPrayers({ ...res }))
-    setMessage('Successfully Added Prayer ' + res.displayName)
-    displaySnack(true)
+    dispatch(
+      enqueueSnack({
+        message: 'Successfully Added Prayer ' + res.displayName,
+        options: {
+          variant: 'success',
+        },
+      })
+    )
   }
 
   const handleNext = () => {
     const notif: TPrayerNotificationContent = {
       title,
       body,
-      sound
+      sound,
     }
     dispatch(addPrayerNotification(notif))
     saveApi(notif)
@@ -219,62 +256,45 @@ export const AddAPrayerNotif = ({
 
   return (
     <div>
-      <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        open={open}
-        autoHideDuration={4000}
-        message={error ? error : message}
-        onClose={snackClose}
-        action={
-          <React.Fragment>
-            <IconButton size="small" onClick={snackClose}>
-              <Close fontSize="small" />
-            </IconButton>
-          </React.Fragment>
-        }
-      />
       <div className={classes.column}>
-          <Typography variant="h5">Add Prayer Notification Content</Typography>
-          <Divider className={classes.divider} />
-          <TextField
-            value={title}
-            label="Title"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <TextField
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            label="Body"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<VolumeOffOutlined />}
-                checkedIcon={<VolumeUpOutlined />}
-                checked={sound}
-                onChange={(e) => setSound(e.target.checked)}
-              />
-            }
-            label="Sound"
-          />
+        <Typography variant="h5">Add Prayer Notification Content</Typography>
+        <Divider className={classes.divider} />
+        <TextField
+          value={title}
+          label="Title"
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <TextField
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          label="Body"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              icon={<VolumeOffOutlined />}
+              checkedIcon={<VolumeUpOutlined />}
+              checked={sound}
+              onChange={(e) => setSound(e.target.checked)}
+            />
+          }
+          label="Sound"
+        />
+      </div>
+      <div className={classes.actionsContainer}>
+        <div>
+          <Button onClick={handleBackStep} className={classes.button}>
+            Back
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            className={classes.buttonTwo}
+          >
+            Finish
+          </Button>
         </div>
-        <div className={classes.actionsContainer}>
-          <div>
-            <Button
-              onClick={handleBackStep}
-              className={classes.button}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              className={classes.buttonTwo}
-            >
-              Finish
-            </Button>
-          </div>
-        </div>
+      </div>
     </div>
   )
 }
@@ -282,31 +302,33 @@ export const AddAPrayerNotif = ({
 const mapToNotif = (state: RootState) => ({
   prayer: state.prayerAdd.prayer,
   notif: state.prayerAdd.notificationContent,
-  token: state.user.token
+  token: state.user.token,
 })
 export const AddPrayerNotif = connect(mapToNotif)(AddAPrayerNotif)
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  buttonTwo: {
-    backgroundColor: '#1e2533',
-    color: '#e6e6e6',
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2)
-  },
-  column: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxWidth: '40vw'
-  },
-  divider: {
-    marginTop: '10px',
-    marginBottom: '20px'
-  }
-}))
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    button: {
+      marginTop: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    },
+    buttonTwo: {
+      backgroundColor: '#1e2533',
+      color: '#e6e6e6',
+      marginTop: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    },
+    actionsContainer: {
+      marginBottom: theme.spacing(2),
+    },
+    column: {
+      display: 'flex',
+      flexDirection: 'column',
+      maxWidth: '40vw',
+    },
+    divider: {
+      marginTop: '10px',
+      marginBottom: '20px',
+    },
+  })
+)

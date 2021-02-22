@@ -10,10 +10,10 @@ const initialState = {
   user: {
     token: '',
     user: undefined,
-    loggedIn: false
+    loggedIn: false,
   },
   screenSize: {
-    width: 0
+    width: 0,
   },
   prayerAdd: {
     prayer: {
@@ -22,18 +22,18 @@ const initialState = {
       displayName: '',
       content: '',
       description: '',
-      notificationContent: ''
+      notificationContent: '',
     },
     notificationContent: {
       title: '',
       body: '',
-      sound: true
-    }
+      sound: true,
+    },
   },
   prayers: {
     prayers: [],
-    count: 0
-  }
+    count: 0,
+  },
 }
 
 const initStore = (preloadedState = initialState) => {
@@ -50,7 +50,7 @@ const initializeStore = (preloadedState: any) => {
   if (preloadedState && store) {
     _store = initStore({
       ...store.getStore(),
-      ...preloadedState
+      ...preloadedState,
     })
     store = undefined
   }

@@ -1,13 +1,7 @@
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { connect, useDispatch } from 'react-redux'
-import {
-  Divider,
-  Grid,
-  makeStyles,
-  Paper,
-  Typography
-} from '@material-ui/core'
+import { Divider, Grid, makeStyles, Paper, Typography } from '@material-ui/core'
 
 import URL from 'config/url.config.json'
 import Layout from 'components/Layout'
@@ -19,9 +13,12 @@ import { updatePrayers } from 'redux/actions/PrayerActions'
 import UserStats from 'components/Stats/UserStats'
 import PrayersStats from 'components/Stats/PrayersStats'
 
-function Home({ user, loggedIn }: {
-  loggedIn: boolean,
-  user: TUser | undefined,
+function Home({
+  user,
+  loggedIn,
+}: {
+  loggedIn: boolean
+  user: TUser | undefined
   width: number
 }) {
   const dispatch = useDispatch()
@@ -32,7 +29,7 @@ function Home({ user, loggedIn }: {
     window.addEventListener('resize', () => {
       dispatch({
         type: 'RESIZE',
-        value: window.innerWidth
+        value: window.innerWidth,
       })
     })
     const token = localStorage.getItem('__token')
@@ -53,17 +50,17 @@ function Home({ user, loggedIn }: {
       const user = await fetch(URL.API + '/me', {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token,
-          Accept: 'application/json'
-        }
+          Authorization: token,
+          Accept: 'application/json',
+        },
       })
-        .then(res => res.json())
+        .then((res) => res.json())
         .catch(console.error)
       dispatch(updateUser(user))
     }
     // Prayers
     const prayers = await fetch(URL.API + '/prayers')
-      .then(res => res.json())
+      .then((res) => res.json())
       .catch(console.error)
     dispatch(updatePrayers(prayers.prayers))
     // Users
@@ -71,17 +68,19 @@ function Home({ user, loggedIn }: {
     const users = await fetch(URL.API + '/users', {
       headers: {
         'Content-Type': 'application/json',
-          'Authorization': token,
-          Accept: 'application/json'
-      }
-    }).then(res => res.json()).catch(console.error)
+        Authorization: token,
+        Accept: 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .catch(console.error)
     dispatch(updateUsers(users.users))
   }
 
   return (
     <Layout title="Dashboard">
       <div className={classes.root}>
-        {loggedIn &&
+        {loggedIn && (
           <div>
             <h1 className={classes.title}>Hi {user?.firstname}</h1>
             <div className={classes.center}>
@@ -104,12 +103,16 @@ function Home({ user, loggedIn }: {
               </Grid>
             </div>
           </div>
-        }
-        {!loggedIn && <div style={{ textAlign: 'center' }}>
-          <Typography variant="h4">API Vigilate et Orate Administration Dashboard</Typography>
-          <Divider />
-          <Typography variant="h6">Please Sign In to continue</Typography>
-        </div>}
+        )}
+        {!loggedIn && (
+          <div style={{ textAlign: 'center' }}>
+            <Typography variant="h4">
+              API Vigilate et Orate Administration Dashboard
+            </Typography>
+            <Divider />
+            <Typography variant="h6">Please Sign In to continue</Typography>
+          </div>
+        )}
       </div>
     </Layout>
   )
@@ -117,35 +120,35 @@ function Home({ user, loggedIn }: {
 
 const useStyles = makeStyles({
   root: {
-    height: '86vh'
+    height: '86vh',
   },
   title: {
     display: 'flex',
     width: '100%',
     flexDirection: 'row',
     paddingLeft: '5%',
-    marginBottom: '5vh'
+    marginBottom: '5vh',
   },
   paper: {
-      padding: '5%',
-      textAlign: 'center',
-      color: '#1e2533'
+    padding: '5%',
+    textAlign: 'center',
+    color: '#1e2533',
   },
   center: {
     display: 'flex',
     flexDirection: 'row',
-    justifyItems: 'center'
+    justifyItems: 'center',
   },
   divider: {
     marginTop: '3vh',
-    marginBottom: '6vh'
-  }
+    marginBottom: '6vh',
+  },
 })
 
 const mapToProps = (state: RootState) => ({
   width: state.screenSize.width,
   user: state.user.user,
-  loggedIn: state.user.loggedIn
+  loggedIn: state.user.loggedIn,
 })
 
 export default connect(mapToProps)(Home)

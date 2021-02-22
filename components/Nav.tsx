@@ -18,7 +18,7 @@ import {
   ListItemText,
   createStyles,
   Theme,
-  CssBaseline
+  CssBaseline,
 } from '@material-ui/core'
 import {
   Menu as MenuIcon,
@@ -28,7 +28,7 @@ import {
   MenuBook,
   Comment,
   AccountBox,
-  Dashboard
+  Dashboard,
 } from '@material-ui/icons'
 import { useRouter } from 'next/router'
 import { connect, useDispatch } from 'react-redux'
@@ -36,16 +36,17 @@ import { connect, useDispatch } from 'react-redux'
 import { userLogout } from 'redux/actions/UserActions'
 import { TUser } from 'types/User'
 import { RootState } from 'redux/reducer/RootReducer'
+import { enqueueSnack } from 'redux/actions/SnacksActions'
 
 const drawerWidth = 240
 
 const Nav = ({
   loggedIn,
   user,
-  children
+  children,
 }: {
-  loggedIn: boolean,
-  user: TUser | undefined,
+  loggedIn: boolean
+  user: TUser | undefined
   children: JSX.Element | JSX.Element[]
 }) => {
   const router = useRouter()
@@ -57,27 +58,40 @@ const Nav = ({
   const [drawerOpen, displayDrawer] = useState(false)
   const open = Boolean(anchorEl)
 
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
-  const logout = () => { dispatch(userLogout()); router.push('/SignIn') }
+  const logout = () => {
+    dispatch(userLogout())
+    dispatch(
+      enqueueSnack({
+        message: 'You have been logged out',
+        options: {
+          variant: 'success',
+        },
+      })
+    )
+    router.push('/SignIn')
+  }
   const handleDrawerOpen = () => displayDrawer(true)
   const handleDrawerClose = () => displayDrawer(false)
-  
+
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="fixed" className={clsx(classes.appBar, {
-        [classes.appBarShift]: drawerOpen
-      })}>
+      <AppBar
+        position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: drawerOpen,
+        })}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton,
-              drawerOpen && classes.hide
-            )}
+            className={clsx(classes.menuButton, drawerOpen && classes.hide)}
           >
             <MenuIcon />
           </IconButton>
@@ -87,7 +101,9 @@ const Nav = ({
           {loggedIn && (
             <div>
               <div className={classes.container}>
-                <Typography className={classes.user}>Hi {user?.firstname} !</Typography>
+                <Typography className={classes.user}>
+                  Hi {user?.firstname} !
+                </Typography>
                 <IconButton
                   aria-label="account of current user"
                   aria-controls="menu-appbar"
@@ -113,16 +129,25 @@ const Nav = ({
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem onClick={() => router.push('/Account')}>Account</MenuItem>
+                <MenuItem onClick={() => router.push('/Account')}>
+                  Account
+                </MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
             </div>
           )}
-          {!loggedIn &&
-          <div>
-            {/* <Button color="inherit" onClick={() => router.push('/Register')}>Sign up</Button> */}
-            <Button variant="outlined" color="inherit" onClick={() => router.push('/SignIn')}>Sign In</Button>
-          </div>}
+          {!loggedIn && (
+            <div>
+              {/* <Button color="inherit" onClick={() => router.push('/Register')}>Sign up</Button> */}
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => router.push('/SignIn')}
+              >
+                Sign In
+              </Button>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -130,7 +155,7 @@ const Nav = ({
         className={classes.drawer}
         open={drawerOpen}
         classes={{
-          paper: classes.drawerPaper
+          paper: classes.drawerPaper,
         }}
       >
         <div className={classes.drawerHeader}>
@@ -148,16 +173,31 @@ const Nav = ({
           </ListItem>
           <Divider />
           {['Prayers', 'Users'].map((text, index) => (
-            <ListItem button key={text} onClick={() => router.push('/' + text)} disabled={!loggedIn}>
-              <ListItemIcon>{index === 0 ? <MenuBook /> : index === 2 ? <Comment /> : <AccountBox />}</ListItemIcon>
+            <ListItem
+              button
+              key={text}
+              onClick={() => router.push('/' + text)}
+              disabled={!loggedIn}
+            >
+              <ListItemIcon>
+                {index === 0 ? (
+                  <MenuBook />
+                ) : index === 2 ? (
+                  <Comment />
+                ) : (
+                  <AccountBox />
+                )}
+              </ListItemIcon>
               <ListItemText primary={text} />
-          </ListItem>
+            </ListItem>
           ))}
         </List>
       </Drawer>
-      <div className={clsx(classes.content, {
-        [classes.contentShift]: drawerOpen
-      })}>
+      <div
+        className={clsx(classes.content, {
+          [classes.contentShift]: drawerOpen,
+        })}
+      >
         <div className={classes.drawerHeader} />
         {children}
       </div>
@@ -165,16 +205,17 @@ const Nav = ({
   )
 }
 
-const useStyle = makeStyles((theme: Theme) => createStyles({
-  root: {
+const useStyle = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
       display: 'flex',
     },
     appBar: {
       transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      backgroundColor: '#1e2533'
+      backgroundColor: '#1e2533',
     },
     appBarShift: {
       marginLeft: drawerWidth,
@@ -188,21 +229,21 @@ const useStyle = makeStyles((theme: Theme) => createStyles({
       marginRight: theme.spacing(2),
     },
     hide: {
-      display: 'none'
+      display: 'none',
     },
     drawer: {
       width: drawerWidth,
       flexShrink: 0,
     },
     drawerPaper: {
-      width: drawerWidth
+      width: drawerWidth,
     },
     drawerHeader: {
       display: 'flex',
       alignItems: 'center',
       padding: theme.spacing(0, 1),
       ...theme.mixins.toolbar,
-      justifyContent: 'flex-end'
+      justifyContent: 'flex-end',
     },
     content: {
       flexGrow: 1,
@@ -212,7 +253,7 @@ const useStyle = makeStyles((theme: Theme) => createStyles({
         duration: theme.transitions.duration.leavingScreen,
       }),
       marginLeft: -drawerWidth,
-      backgroundColor: '#e6e6e6'
+      backgroundColor: '#e6e6e6',
     },
     contentShift: {
       transition: theme.transitions.create('margin', {
@@ -225,17 +266,18 @@ const useStyle = makeStyles((theme: Theme) => createStyles({
       flexGrow: 1,
     },
     user: {
-      paddingRight: '10px'
+      paddingRight: '10px',
     },
     container: {
       display: 'flex',
-      alignItems: 'center'
-    }
-}))
+      alignItems: 'center',
+    },
+  })
+)
 
 const mapStateToProps = (state: RootState) => ({
   user: state.user.user,
-  loggedIn: state.user.loggedIn
+  loggedIn: state.user.loggedIn,
 })
 
 export default connect(mapStateToProps)(Nav)

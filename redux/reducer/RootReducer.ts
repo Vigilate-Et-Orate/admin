@@ -7,6 +7,7 @@ import prayerReducer from './PrayerReducer'
 import prayerAddReducer from './PrayerAddReducer'
 import intentionsReducer from './IntentionsReducer'
 import usersReducer from './UsersReducer'
+import snacksReducer from './SnacksReducer'
 
 const rootReducer = combineReducers({
   screenSize: screenSizeReducer,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
   users: usersReducer,
   prayerAdd: prayerAddReducer,
   prayers: prayerReducer,
-  intentions: intentionsReducer
+  intentions: intentionsReducer,
+  snacks: snacksReducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>
