@@ -39,15 +39,15 @@ const UserStats = ({ count }: { count: number }) => {
 
 const useStyles = makeStyles({
   spacing: {
-    marginTop: '3vh',
+    marginTop: '1vh',
   },
   cardPad: {
-    padding: '2vw',
+    padding: '1.5vw',
   },
   actions: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    marginTop: '3vh',
+    marginTop: '2vh',
   },
 })
 
